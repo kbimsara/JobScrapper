@@ -19,21 +19,23 @@ const fetcher = async (url: string) => {
 
 interface DashboardStats {
   activeJobRoles: number;
-  totalJobs: number;
+  totalJobs?: number;
+  jobsReceived?: number;
   notificationsSent: number;
-  notificationsFailed: number;
+  notificationsFailed?: number;
+  notificationFailures?: number;
 }
 
 interface DashboardData {
   stats: DashboardStats;
-  scraperHealth: ScraperHealth;
+  scraperHealth: any; // Using any because properties mismatch
   recentJobs: any[];
   recentNotifications: any[];
 }
 
 export function ScraperDashboard() {
   const { data, error, isLoading, mutate } = useSWR<DashboardData>("/api/dashboard", fetcher, {
-    refreshInterval: 30000 // refresh every 30s
+    refreshInterval: 12000 // refresh every 12s
   });
 
   const [isSyncing, setIsSyncing] = useState(false);
@@ -74,12 +76,18 @@ export function ScraperDashboard() {
 
   const { stats, scraperHealth } = data!;
   
-  const healthColors = {
+  const healthColors: Record<string, string> = {
     healthy: "text-accent bg-accent/10 border-accent/20",
     warning: "text-amber-500 bg-amber-500/10 border-amber-500/20",
     failed: "text-error bg-error/10 border-error/20",
     unknown: "text-secondary bg-surface border-border"
   };
+
+  // Map API keys to variables
+  const totalJobs = stats.jobsReceived ?? stats.totalJobs ?? 0;
+  const failedAlerts = stats.notificationFailures ?? stats.notificationsFailed ?? 0;
+  const lastSyncAt = scraperHealth.lastSyncAt || scraperHealth.lastRun;
+  const lastError = scraperHealth.lastError || scraperHealth.error;
 
   return (
     <div className="flex flex-col gap-6">
@@ -91,7 +99,7 @@ export function ScraperDashboard() {
             <Activity className="w-4 h-4 mr-2" />
             <span className="text-sm font-medium">Active Roles</span>
           </div>
-          <div className="text-2xl font-bold text-primary">{stats.activeJobRoles}</div>
+          <div className="text-2xl font-bold text-primary">{stats.activeJobRoles || 0}</div>
         </div>
         
         <div className="p-5 border border-border bg-surface rounded-lg flex flex-col gap-2">
@@ -99,7 +107,7 @@ export function ScraperDashboard() {
             <Briefcase className="w-4 h-4 mr-2" />
             <span className="text-sm font-medium">Total Jobs</span>
           </div>
-          <div className="text-2xl font-bold text-primary">{stats.totalJobs}</div>
+          <div className="text-2xl font-bold text-primary">{totalJobs}</div>
         </div>
         
         <div className="p-5 border border-border bg-surface rounded-lg flex flex-col gap-2">
@@ -107,7 +115,7 @@ export function ScraperDashboard() {
             <Bell className="w-4 h-4 mr-2" />
             <span className="text-sm font-medium">Alerts Sent</span>
           </div>
-          <div className="text-2xl font-bold text-primary">{stats.notificationsSent}</div>
+          <div className="text-2xl font-bold text-primary">{stats.notificationsSent || 0}</div>
         </div>
         
         <div className="p-5 border border-border bg-surface rounded-lg flex flex-col gap-2">
@@ -115,7 +123,7 @@ export function ScraperDashboard() {
             <AlertTriangle className="w-4 h-4 mr-2" />
             <span className="text-sm font-medium">Failed Alerts</span>
           </div>
-          <div className="text-2xl font-bold text-error">{stats.notificationsFailed}</div>
+          <div className="text-2xl font-bold text-error">{failedAlerts}</div>
         </div>
       </div>
 
@@ -150,11 +158,11 @@ export function ScraperDashboard() {
           <div className="flex flex-col gap-2">
             <span className="text-sm text-secondary">Last Sync Run</span>
             <div className="text-primary font-medium">
-              {scraperHealth.lastRun ? formatDistanceToNow(new Date(scraperHealth.lastRun), { addSuffix: true }) : 'Never'}
+              {lastSyncAt ? formatDistanceToNow(new Date(lastSyncAt), { addSuffix: true }) : 'Never'}
             </div>
-            {scraperHealth.lastRun && (
+            {lastSyncAt && (
               <div className="text-xs text-secondary font-mono">
-                {new Date(scraperHealth.lastRun).toLocaleString()}
+                {new Date(lastSyncAt).toLocaleString()}
               </div>
             )}
           </div>
@@ -173,11 +181,11 @@ export function ScraperDashboard() {
             </div>
           </div>
           
-          {scraperHealth.error && (
+          {lastError && (
             <div className="col-span-full mt-2 p-4 bg-error/10 border border-error/20 rounded-md">
               <div className="flex items-start text-error text-sm">
                 <AlertCircle className="w-4 h-4 mr-2 shrink-0 mt-0.5" />
-                <span className="font-mono">{scraperHealth.error}</span>
+                <span className="font-mono">{lastError}</span>
               </div>
             </div>
           )}
