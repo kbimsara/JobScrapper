@@ -75,6 +75,7 @@ export function ScraperDashboard() {
   }
 
   const { stats, scraperHealth } = data!;
+  console.log("ScraperDashboard received data:", data);
   
   const healthColors: Record<string, string> = {
     healthy: "text-accent bg-accent/10 border-accent/20",
@@ -88,6 +89,13 @@ export function ScraperDashboard() {
   const failedAlerts = stats.notificationFailures ?? stats.notificationsFailed ?? 0;
   const lastSyncAt = scraperHealth.lastSyncAt || scraperHealth.lastRun;
   const lastError = scraperHealth.lastError || scraperHealth.error;
+  
+  // Calculate next scheduled run (12 hours after last sync)
+  let nextRun = scraperHealth.nextRun;
+  if (!nextRun && lastSyncAt) {
+    const nextDate = new Date(new Date(lastSyncAt).getTime() + 12 * 60 * 60 * 1000); // 12 hours
+    nextRun = nextDate.toISOString();
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -165,20 +173,6 @@ export function ScraperDashboard() {
                 {new Date(lastSyncAt).toLocaleString()}
               </div>
             )}
-          </div>
-          
-          <div className="flex flex-col gap-2">
-            <span className="text-sm text-secondary">Jobs Found (Last Run)</span>
-            <div className="text-primary font-medium">
-              {scraperHealth.jobsFound ?? 'N/A'}
-            </div>
-          </div>
-          
-          <div className="flex flex-col gap-2">
-            <span className="text-sm text-secondary">Next Scheduled Run</span>
-            <div className="text-primary font-medium">
-              {scraperHealth.nextRun ? formatDistanceToNow(new Date(scraperHealth.nextRun), { addSuffix: true }) : 'Unknown'}
-            </div>
           </div>
           
           {lastError && (
