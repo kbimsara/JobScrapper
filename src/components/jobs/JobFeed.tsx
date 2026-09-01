@@ -36,6 +36,35 @@ export function JobFeed() {
     setLastSync(getLastSyncTime());
     setIsInitializing(false);
 
+    // Load saved filters if URL doesn't have them
+    try {
+      const saved = localStorage.getItem("job_intel_filters");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.selectedKeywords && parsed.selectedKeywords.length > 0) {
+          setSelectedKeywords(parsed.selectedKeywords);
+        }
+        
+        const currentUrlParams = new URLSearchParams(window.location.search);
+        let updated = false;
+        
+        if (!currentUrlParams.has("platform") && parsed.platform) {
+          currentUrlParams.set("platform", parsed.platform);
+          updated = true;
+        }
+        if (!currentUrlParams.has("sort") && parsed.sort && parsed.sort !== "postedAt:desc") {
+          currentUrlParams.set("sort", parsed.sort);
+          updated = true;
+        }
+        
+        if (updated) {
+          router.replace(`?${currentUrlParams.toString()}`, { scroll: false });
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load filters", e);
+    }
+
     // Fetch roles to get keywords
     fetch('/api/roles')
       .then(res => res.json())
@@ -162,6 +191,17 @@ export function JobFeed() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
+
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    if (isInitializing) return;
+    const filtersToSave = {
+      selectedKeywords,
+      platform: currentPlatform,
+      sort: currentSort
+    };
+    localStorage.setItem("job_intel_filters", JSON.stringify(filtersToSave));
+  }, [selectedKeywords, currentPlatform, currentSort, isInitializing]);
 
 
   return (
