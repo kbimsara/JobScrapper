@@ -94,13 +94,16 @@ export function JobFeed() {
     }
   };
 
-  // Sync on first load if we have no jobs
+  // Sync on first load if we have no jobs OR if it's been more than 1 minute
   useEffect(() => {
-    if (!isInitializing && jobs.length === 0 && !isSyncing) {
-      handleSync();
+    if (!isInitializing && !isSyncing) {
+      const timeSinceSync = lastSync ? Date.now() - lastSync.getTime() : Infinity;
+      if (jobs.length === 0 || timeSinceSync > 60000) {
+        handleSync();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInitializing, jobs.length]);
+  }, [isInitializing]);
 
   // 3. Client-side Filtering & Sorting
   const filteredAndSortedJobs = useMemo(() => {
@@ -136,11 +139,21 @@ export function JobFeed() {
       if (currentSort === "postedAt:desc") {
         const timeA = a.postedAt ? new Date(a.postedAt).getTime() : 0;
         const timeB = b.postedAt ? new Date(b.postedAt).getTime() : 0;
+        if (timeB === timeA) {
+          const scrapeA = a.scrapedAt ? new Date(a.scrapedAt).getTime() : 0;
+          const scrapeB = b.scrapedAt ? new Date(b.scrapedAt).getTime() : 0;
+          return scrapeB - scrapeA;
+        }
         return timeB - timeA;
       }
       if (currentSort === "postedAt:asc") {
         const timeA = a.postedAt ? new Date(a.postedAt).getTime() : 0;
         const timeB = b.postedAt ? new Date(b.postedAt).getTime() : 0;
+        if (timeB === timeA) {
+          const scrapeA = a.scrapedAt ? new Date(a.scrapedAt).getTime() : 0;
+          const scrapeB = b.scrapedAt ? new Date(b.scrapedAt).getTime() : 0;
+          return scrapeA - scrapeB;
+        }
         return timeA - timeB;
       }
       if (currentSort === "scrapedAt:desc") {

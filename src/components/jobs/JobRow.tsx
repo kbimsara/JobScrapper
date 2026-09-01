@@ -11,7 +11,29 @@ interface JobRowProps {
 }
 
 export function JobRow({ job }: JobRowProps) {
-  const postedAgo = job.postedAt ? formatDistanceToNow(new Date(job.postedAt), { addSuffix: true }) : 'Unknown date';
+  let postedAgo = 'Unknown date';
+  if (job.postedAt) {
+    const isMidnightUTC = typeof job.postedAt === 'string' && job.postedAt.endsWith('T00:00:00.000Z');
+    
+    if (isMidnightUTC) {
+      // It's an imprecise date-only value (e.g. 2026-09-01).
+      // Check if it's today's date in UTC.
+      const postedDate = new Date(job.postedAt);
+      const now = new Date();
+      if (
+        postedDate.getUTCFullYear() === now.getUTCFullYear() &&
+        postedDate.getUTCMonth() === now.getUTCMonth() &&
+        postedDate.getUTCDate() === now.getUTCDate()
+      ) {
+        postedAgo = 'Today';
+      } else {
+        postedAgo = postedDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      }
+    } else {
+      postedAgo = formatDistanceToNow(new Date(job.postedAt), { addSuffix: true });
+    }
+  }
+
   const scrapedAgo = job.scrapedAt ? formatDistanceToNow(new Date(job.scrapedAt), { addSuffix: true }) : 'Recently';
 
   return (

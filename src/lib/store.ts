@@ -95,6 +95,11 @@ export async function syncJobs(): Promise<SyncResult> {
   allJobs.sort((a, b) => {
     const timeA = a.postedAt ? new Date(a.postedAt).getTime() : 0;
     const timeB = b.postedAt ? new Date(b.postedAt).getTime() : 0;
+    if (timeB === timeA) {
+      const scrapeA = a.scrapedAt ? new Date(a.scrapedAt).getTime() : 0;
+      const scrapeB = b.scrapedAt ? new Date(b.scrapedAt).getTime() : 0;
+      return scrapeB - scrapeA;
+    }
     return timeB - timeA;
   });
 

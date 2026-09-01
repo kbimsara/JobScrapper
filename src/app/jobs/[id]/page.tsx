@@ -1,4 +1,5 @@
-import { getJobById } from "@/lib/api/jobs";
+import connectToDatabase from "@/lib/db/mongoose";
+import { Job } from "@/lib/db/models/Job";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft, Bookmark, Building, ExternalLink, Globe, MapPin } from "lucide-react";
 import Link from "next/link";
@@ -8,7 +9,18 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   let job;
   try {
     const { id } = await params;
-    job = await getJobById(id);
+    await connectToDatabase();
+    
+    // Attempt to find by ObjectId if valid, else string (if it's not a standard ObjectId)
+    const mongooseJob = await Job.findById(id).lean().catch(() => Job.findOne({ id }).lean());
+    if (mongooseJob) {
+      job = {
+        ...mongooseJob,
+        id: mongooseJob._id.toString(),
+        platform: mongooseJob.source || mongooseJob.platform,
+        scrapedAt: mongooseJob.collectedAt || mongooseJob.createdAt || mongooseJob.scrapedAt
+      };
+    }
   } catch (error) {
     return notFound();
   }
@@ -17,7 +29,27 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
     return notFound();
   }
 
-  const postedAgo = job.postedAt ? formatDistanceToNow(new Date(job.postedAt), { addSuffix: true }) : 'Unknown date';
+  let postedAgo = 'Unknown date';
+  if (job.postedAt) {
+    const isMidnightUTC = typeof job.postedAt === 'string' && job.postedAt.endsWith('T00:00:00.000Z');
+    
+    if (isMidnightUTC) {
+      const postedDate = new Date(job.postedAt);
+      const now = new Date();
+      if (
+        postedDate.getUTCFullYear() === now.getUTCFullYear() &&
+        postedDate.getUTCMonth() === now.getUTCMonth() &&
+        postedDate.getUTCDate() === now.getUTCDate()
+      ) {
+        postedAgo = 'Today';
+      } else {
+        postedAgo = postedDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+    } else {
+      postedAgo = formatDistanceToNow(new Date(job.postedAt), { addSuffix: true });
+    }
+  }
+
   const scrapedAgo = job.scrapedAt ? formatDistanceToNow(new Date(job.scrapedAt), { addSuffix: true }) : 'Recently';
 
   return (
