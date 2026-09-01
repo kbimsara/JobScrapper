@@ -19,6 +19,8 @@ export function JobFeed() {
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const debouncedSearch = useDebounce(search, 300);
   const currentPlatform = searchParams.get("platform") || "";
+  const currentWorkplace = searchParams.get("workplace") || "";
+  const currentRegion = searchParams.get("region") || "";
   const currentSort = searchParams.get("sort") || "postedAt:desc";
   const currentPage = Number(searchParams.get("page")) || 1;
 
@@ -50,6 +52,14 @@ export function JobFeed() {
         
         if (!currentUrlParams.has("platform") && parsed.platform) {
           currentUrlParams.set("platform", parsed.platform);
+          updated = true;
+        }
+        if (!currentUrlParams.has("workplace") && parsed.workplace) {
+          currentUrlParams.set("workplace", parsed.workplace);
+          updated = true;
+        }
+        if (!currentUrlParams.has("region") && parsed.region) {
+          currentUrlParams.set("region", parsed.region);
           updated = true;
         }
         if (!currentUrlParams.has("sort") && parsed.sort && parsed.sort !== "postedAt:desc") {
@@ -117,6 +127,33 @@ export function JobFeed() {
       );
     }
 
+    // Filter by workplace type
+    if (currentWorkplace) {
+      result = result.filter(j => {
+        const loc = (j.location || "").toLowerCase();
+        const isRemote = j.remote === true || loc.includes("remote");
+        const isHybrid = loc.includes("hybrid");
+        
+        if (currentWorkplace === "remote") return isRemote;
+        if (currentWorkplace === "hybrid") return isHybrid;
+        if (currentWorkplace === "onsite") return !isRemote && !isHybrid;
+        return true;
+      });
+    }
+
+    // Filter by Region (Sri Lanka vs Overseas)
+    if (currentRegion) {
+      result = result.filter(j => {
+        const loc = (j.location || "").toLowerCase();
+        // Assume it's SL if location contains SL keywords or if it's from topjobs without explicitly stating another country
+        const isLK = loc.includes("sri lanka") || loc.includes("colombo") || loc.includes("gampaha") || loc.includes("kandy") || loc.includes("lk") || j.platform === "topjobs";
+        
+        if (currentRegion === "lk") return isLK;
+        if (currentRegion === "overseas") return !isLK;
+        return true;
+      });
+    }
+
     // Filter by search query
     if (debouncedSearch) {
       const q = debouncedSearch.toLowerCase();
@@ -165,7 +202,7 @@ export function JobFeed() {
     });
 
     return result;
-  }, [jobs, currentPlatform, debouncedSearch, currentSort, selectedKeywords]);
+  }, [jobs, currentPlatform, debouncedSearch, currentSort, selectedKeywords, currentWorkplace, currentRegion]);
 
   // 4. Client-side Pagination
   const paginatedJobs = useMemo(() => {
@@ -211,10 +248,12 @@ export function JobFeed() {
     const filtersToSave = {
       selectedKeywords,
       platform: currentPlatform,
+      workplace: currentWorkplace,
+      region: currentRegion,
       sort: currentSort
     };
     localStorage.setItem("job_intel_filters", JSON.stringify(filtersToSave));
-  }, [selectedKeywords, currentPlatform, currentSort, isInitializing]);
+  }, [selectedKeywords, currentPlatform, currentWorkplace, currentRegion, currentSort, isInitializing]);
 
 
   return (
@@ -245,6 +284,37 @@ export function JobFeed() {
               <option value="">All Platforms</option>
               <option value="linkedin">LinkedIn</option>
               <option value="topjobs">Top Jobs</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-secondary">
+              <ChevronDown className="h-4 w-4" />
+            </div>
+          </div>
+
+          <div className="relative shrink-0">
+            <select
+              value={currentWorkplace}
+              onChange={(e) => handleURLChange("workplace", e.target.value)}
+              className="appearance-none block w-full pl-3 pr-10 py-2 border border-border rounded-md bg-surface text-primary text-sm focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent cursor-pointer transition-colors"
+            >
+              <option value="">All Workplaces</option>
+              <option value="remote">Remote</option>
+              <option value="hybrid">Hybrid</option>
+              <option value="onsite">On-site</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-secondary">
+              <ChevronDown className="h-4 w-4" />
+            </div>
+          </div>
+
+          <div className="relative shrink-0">
+            <select
+              value={currentRegion}
+              onChange={(e) => handleURLChange("region", e.target.value)}
+              className="appearance-none block w-full pl-3 pr-10 py-2 border border-border rounded-md bg-surface text-primary text-sm focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent cursor-pointer transition-colors"
+            >
+              <option value="">All Regions</option>
+              <option value="lk">Sri Lanka</option>
+              <option value="overseas">Overseas</option>
             </select>
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-secondary">
               <ChevronDown className="h-4 w-4" />
