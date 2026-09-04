@@ -274,8 +274,8 @@ export function JobFeed() {
         </div>
 
         {/* Filters & Sort */}
-        <div className="flex items-center gap-3">
-          <div className="relative shrink-0">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-3">
+          <div className="relative col-span-1 sm:w-auto shrink-0">
             <select
               value={currentPlatform}
               onChange={(e) => handleURLChange("platform", e.target.value)}
@@ -290,7 +290,7 @@ export function JobFeed() {
             </div>
           </div>
 
-          <div className="relative shrink-0">
+          <div className="relative col-span-1 sm:w-auto shrink-0">
             <select
               value={currentWorkplace}
               onChange={(e) => handleURLChange("workplace", e.target.value)}
@@ -306,7 +306,7 @@ export function JobFeed() {
             </div>
           </div>
 
-          <div className="relative shrink-0">
+          <div className="relative col-span-1 sm:w-auto shrink-0">
             <select
               value={currentRegion}
               onChange={(e) => handleURLChange("region", e.target.value)}
@@ -321,7 +321,7 @@ export function JobFeed() {
             </div>
           </div>
 
-          <div className="relative shrink-0">
+          <div className="relative col-span-1 sm:w-auto shrink-0">
             <select
               value={currentSort}
               onChange={(e) => handleURLChange("sort", e.target.value)}
@@ -339,9 +339,10 @@ export function JobFeed() {
           <button 
             onClick={handleSync} 
             disabled={isSyncing}
-            className="btn btn-secondary px-3 py-2 shrink-0 transition-all disabled:opacity-50"
+            className="col-span-2 sm:col-span-1 btn btn-secondary px-3 py-2 shrink-0 transition-all disabled:opacity-50 flex justify-center items-center"
             title="Sync Jobs"
           >
+            <span className="sm:hidden mr-2 text-sm font-medium">Sync Jobs</span>
             <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
           </button>
         </div>

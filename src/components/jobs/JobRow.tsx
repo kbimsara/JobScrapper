@@ -79,21 +79,21 @@ export function JobRow({ job }: JobRowProps) {
         </div>
       </div>
 
-      <div className="flex sm:flex-col items-center sm:items-end gap-2 shrink-0">
+      <div className="flex sm:flex-col items-center sm:items-end gap-2 shrink-0 mt-3 sm:mt-0 w-full sm:w-auto">
         <button 
-          className="btn btn-ghost px-3 py-1.5 text-xs w-full sm:w-auto"
+          className="btn btn-ghost px-3 py-1.5 text-xs flex-1 sm:flex-none justify-center w-full sm:w-auto"
           aria-label="Save job"
         >
           <Bookmark className="w-3.5 h-3.5 mr-1.5" />
-          <span className="sm:hidden">Save</span>
+          <span>Save</span>
         </button>
         <a 
           href={job.url}
           target="_blank"
           rel="noreferrer noopener"
-          className="btn btn-secondary px-3 py-1.5 text-xs w-full sm:w-auto"
+          className="btn btn-secondary px-3 py-1.5 text-xs flex-1 sm:flex-none justify-center w-full sm:w-auto"
         >
-          Open
+          <span>Open</span>
           <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
         </a>
       </div>
