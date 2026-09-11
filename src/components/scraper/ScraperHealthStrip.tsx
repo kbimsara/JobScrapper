@@ -31,7 +31,7 @@ export function ScraperHealthStrip() {
   if (error || !data) {
     return (
       <div className="h-8 flex items-center justify-center px-4 text-sm font-bold text-white health-wave-orange">
-        Bad server health
+        Bad health
       </div>
     );
   }
@@ -43,7 +43,7 @@ export function ScraperHealthStrip() {
       "h-8 flex items-center justify-center px-4 text-sm font-bold text-white transition-all duration-500",
       isHealthy ? "health-wave-green" : "health-wave-orange"
     )}>
-      {isHealthy ? "Good server health" : "Bad server health"}
+      {isHealthy ? "healthy" : "Bad health"}
     </div>
   );
 }

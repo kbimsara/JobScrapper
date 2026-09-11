@@ -60,13 +60,13 @@
 }
 
 .health-wave-green {
-  background: linear-gradient(270deg, #10b981, #059669, #10b981);
+  background: linear-gradient(270deg, #022c22, #10b981, #022c22);
   background-size: 200% 200%;
   animation: waveBg 4s ease infinite;
 }
 
 .health-wave-orange {
-  background: linear-gradient(270deg, #f97316, #ea580c, #f97316);
+  background: linear-gradient(270deg, #431407, #f97316, #431407);
   background-size: 200% 200%;
   animation: waveBg 4s ease infinite;
 }
