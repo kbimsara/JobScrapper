@@ -1,43 +1,61 @@
-# Job Intelligence & Scraper
+# 🕵️‍♂️ JobScrapper & Intelligence Dashboard
 
-A personal job intelligence application built with Next.js to monitor background scraping jobs, manage job roles, and provide a dashboard for job hunting.
+Yo! Welcome to **JobScrapper** — my personal, slightly over-engineered job hunting command center. 🚀 
 
-## Features
+This is where I keep track of all the jobs my background scrapers are finding for me, manage the roles I actually care about, and hopefully, score that next sweet gig. 
 
-- **Dashboard**: View jobs, roles, and application statuses.
-- **Scraper Health**: Monitor the status of background scrapers in real-time.
-- **Job Management**: Review, filter, and organize fetched jobs.
-- **Role Management**: Define and track different job roles.
+## 🌟 What's this thing do?
 
-## Tech Stack
+It does a lot, actually. Here is the full rundown of all the magic packed inside:
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Database**: [Mongoose](https://mongoosejs.com/) (MongoDB)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) v4
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Data Fetching**: [SWR](https://swr.vercel.app/)
+### 💼 The Job Feed
+- **Global Search:** Search jobs, skills, or companies. 
+- **Mega Filters:** Filter jobs by Platform (LinkedIn, TopJobs), Workplace Type (Remote, Hybrid, On-site), and Region (Sri Lanka vs. Overseas).
+- **Tag-based Filtering:** Filter your job feed easily using the keywords extracted from your roles.
+- **Sorting Magic:** Sort by Recently Posted, Oldest Posted, or Recently Scraped.
+- **Offline Caching:** Fast loading and local storage syncing for jobs.
+- **Pagination:** Don't break the browser — smooth navigation through pages of jobs.
 
-## Getting Started
+### 🎯 Role Management
+- **Role Configs:** Keep track of different hats you want to wear.
+- **Active & Paused States:** Toggle roles on or off so the scraper knows what you currently care about.
+- **Targeting:** Define targeted keywords and locations for each role.
 
-First, ensure you have your MongoDB URI set up in a `.env.local` file (copy from `.env.example` if available).
+### 🩺 Scraper Health & Dashboard
+- **Live Stats:** See active roles, total jobs, alerts sent, and failed alerts at a glance.
+- **Health Monitoring:** Overall status (Healthy, Failed, Unknown) with last sync and next scheduled run timings.
+- **Error Tracking:** Catches and displays the last scraper error so you know when things break.
+- **Manual Sync:** A big "Run Sync Now" button for when you just can't wait for the background cron job.
+- **Auto-refresh:** Dashboard stats auto-refresh every 12 seconds.
 
-Then, install dependencies and run the development server:
+## 🛠️ Built with the good stuff
+
+- **Next.js** (App Router because we like the future)
+- **MongoDB** (Mongoose for when I need some structure in my NoSQL life)
+- **Tailwind CSS v4** (Making things look pretty without writing actual CSS)
+- **Lucide React** (Shiny icons)
+- **SWR** (Data fetching made easy-peasy)
+
+## 🚀 How to fire it up
+
+1. Make sure you got your MongoDB URI set up in a `.env.local` file (there's an `.env.example` hanging around, just copy that).
+2. Install the things and start the engine:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Head over to [http://localhost:3000](http://localhost:3000) and behold the magic! ✨
 
-## Project Structure
+## 📂 Where things live
 
-- `src/app/jobs/` - Jobs listing and management pages
-- `src/app/roles/` - Roles management pages
-- `src/app/health/` - Scraper health and monitoring dashboard
-- `src/app/api/` - Next.js API routes handling data and scraper coordination
-- `src/components/` - Reusable React components (UI, Navigation, Scraper)
+- `src/app/jobs/` - Where the job magic happens
+- `src/app/roles/` - For managing those dream roles
+- `src/app/health/` - The scraper ICU
+- `src/app/api/` - The backend brains (Next.js API routes)
+- `src/components/` - The Lego blocks (UI pieces, etc.)
 
-## License
+## 📜 License
 
-This project is open-source and available under the standard MIT License.
+It's MIT. Do whatever you want with it, just don't blame me if the bots become sentient. 🤖
