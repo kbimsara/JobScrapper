@@ -15,9 +15,13 @@ export async function GET(request: Request) {
     const query: any = {};
     const platform = searchParams.get("platform");
     if (platform) {
+      const targetPlatforms = (platform.toLowerCase() === "itpro" || platform.toLowerCase() === "itpro.lk")
+        ? ["itpro", "itpro.lk"]
+        : [platform];
+
       query.$or = [
-        { platform: platform },
-        { source: platform }
+        { platform: { $in: targetPlatforms } },
+        { source: { $in: targetPlatforms } }
       ];
     }
     

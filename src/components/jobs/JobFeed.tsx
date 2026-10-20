@@ -121,10 +121,15 @@ export function JobFeed() {
 
     // Filter by platform
     if (currentPlatform) {
-      result = result.filter(j => 
-        (j.platform || "").toLowerCase() === currentPlatform.toLowerCase() ||
-        (j.source || "").toLowerCase() === currentPlatform.toLowerCase()
-      );
+      const target = currentPlatform.toLowerCase();
+      result = result.filter(j => {
+        const p = (j.platform || "").toLowerCase();
+        const s = (j.source || "").toLowerCase();
+        if (target === "itpro" || target === "itpro.lk") {
+          return p === "itpro" || p === "itpro.lk" || s === "itpro" || s === "itpro.lk";
+        }
+        return p === target || s === target;
+      });
     }
 
     // Filter by workplace type
@@ -145,8 +150,10 @@ export function JobFeed() {
     if (currentRegion) {
       result = result.filter(j => {
         const loc = (j.location || "").toLowerCase();
-        // Assume it's SL if location contains SL keywords or if it's from topjobs without explicitly stating another country
-        const isLK = loc.includes("sri lanka") || loc.includes("colombo") || loc.includes("gampaha") || loc.includes("kandy") || loc.includes("lk") || j.platform === "topjobs";
+        const p = (j.platform || "").toLowerCase();
+        const s = (j.source || "").toLowerCase();
+        // Assume it's SL if location contains SL keywords or if it's from topjobs/itpro without explicitly stating another country
+        const isLK = loc.includes("sri lanka") || loc.includes("colombo") || loc.includes("gampaha") || loc.includes("kandy") || loc.includes("lk") || p === "topjobs" || s === "topjobs" || p === "itpro" || s === "itpro" || p === "itpro.lk" || s === "itpro.lk";
         
         if (currentRegion === "lk") return isLK;
         if (currentRegion === "overseas") return !isLK;
@@ -277,13 +284,14 @@ export function JobFeed() {
         <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-3">
           <div className="relative col-span-1 sm:w-auto shrink-0">
             <select
-              value={currentPlatform}
+              value={currentPlatform.toLowerCase() === "itpro.lk" ? "itpro" : currentPlatform}
               onChange={(e) => handleURLChange("platform", e.target.value)}
               className="appearance-none block w-full pl-3 pr-10 py-2 border border-border rounded-md bg-surface text-primary text-sm focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent cursor-pointer transition-colors"
             >
               <option value="">All Platforms</option>
               <option value="linkedin">LinkedIn</option>
               <option value="topjobs">Top Jobs</option>
+              <option value="itpro">itpro.lk</option>
             </select>
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-secondary">
               <ChevronDown className="h-4 w-4" />
