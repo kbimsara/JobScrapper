@@ -10,7 +10,7 @@ It does a lot, actually. Here is the full rundown of all the magic packed inside
 
 ### 💼 The Job Feed
 - **Global Search:** Search jobs, skills, or companies. 
-- **Mega Filters:** Filter jobs by Platform (LinkedIn, TopJobs, itpro.lk), Workplace Type (Remote, Hybrid, On-site), and Region (Sri Lanka vs. Overseas).
+- **Mega Filters:** Filter jobs by Platform (LinkedIn, TopJobs, itpro), Workplace Type (Remote, Hybrid, On-site), and Region (Sri Lanka vs. Overseas).
 - **Tag-based Filtering:** Filter your job feed easily using the keywords extracted from your roles.
 - **Sorting Magic:** Sort by Recently Posted, Oldest Posted, or Recently Scraped.
 - **Offline Caching:** Fast loading and local storage syncing for jobs.
